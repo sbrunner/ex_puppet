@@ -25,6 +25,11 @@ filebucket { 'main':
 # Make filebucket 'main' the default backup location for all File resources:
 File { backup => 'main' }
 
+node 'sbrunner.puppetlabs.vm' {
+  include ::users
+  include ::users::admins
+}
+
 # DEFAULT NODE
 # Node definitions in this file are merged with node data from the console. See
 # http://docs.puppetlabs.com/guides/language_guide.html#nodes for more on
@@ -36,9 +41,6 @@ File { backup => 'main' }
 # specified in the console for that node.
 
 node default {
-  # This is where you can declare classes for all nodes.
-  # Example:
-  #   class { 'my_class': }
-  # notify { "Hello ${fqdn}": }
+  fail("Not classified ${fqdn}")
 }
 
