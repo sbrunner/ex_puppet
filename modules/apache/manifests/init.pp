@@ -40,6 +40,6 @@ class apache {
   service { 'httpd':
     ensure  => running,
     enable  => true,
-    subscribe => Package['httpd'],
+    subscribe => File['/etc/httpd/conf/httpd.conf'],
   }
 }
