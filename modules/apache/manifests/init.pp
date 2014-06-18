@@ -48,6 +48,7 @@ class apache {
     ensure => directory,
   }
 
+  $vhost = 'www'
   file { '/var/www/html/index.html':
     ensure  => file,
     content => template('apache/index.html.erb'),
@@ -58,10 +59,23 @@ class apache {
     source  => 'puppet:///modules/apache/httpd.conf',
     require => Package['apache_package'],
   }
-
-  service { $apache_service:
-    ensure  => running,
-    enable  => true,
+  service { 'apache_service':
+    name      => $apache_service,
+    ensure    => running,
+    enable    => true,
     subscribe => File['apache_config'],
+  }
+
+  file { '/var/www/muppets':
+    ensure => directory,
+  }
+  apache::vhost { 'elmo.puppetlabs.com':
+    docroot => '/var/www/muppets/elmo',
+    options => 'Indexes MultiViews',
+  }
+
+  apache::vhost { 'piggy.puppetlabs.com':
+    docroot => '/var/www/muppets/piggy',
+    options => '-MultiViews',
   }
 }
