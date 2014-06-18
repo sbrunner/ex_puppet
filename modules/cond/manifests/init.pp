@@ -1,12 +1,24 @@
 class cond {
-  $content = $::osfamily ? {
-    'debian' => 'Running the best OS.',
-    'redhat' => 'Running a bood OS.',
-    'suse' => 'Running a bad OS.',
-    'windows' => 'Running the wroth OS.',
+  case $::osfamily {
+    'debian': {
+      $qualif = 'the best'
+    }
+    'redhat': {
+      $qualif = 'a good'
+    }
+    'suse': {
+      $qualif = 'a bad'
+    }
+    'windows': {
+      $qualif = 'the wroth'
+    }
+    default: {
+      fail('unsupported')
+    }
   }
+  notice("Running ${qualif} OS.")
   file { '/tmp/os':
     ensure  => file,
-    content => $content,
+    content => "Running ${qualif} OS.",
   }
 }
