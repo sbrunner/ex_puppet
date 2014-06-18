@@ -29,6 +29,7 @@ node 'sbrunner.puppetlabs.vm' {
   include ::users
   include ::users::admins
   include ::apache
+  include ::cond
 }
 
 # DEFAULT NODE
