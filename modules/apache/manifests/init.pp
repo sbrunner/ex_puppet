@@ -1,21 +1,42 @@
 class apache {
-  package { 'httpd':
+  case $::osfamily {
+    'debian': {
+      $apache_package = 'apache2'
+      $apache_user = 'www-data'
+      $apache_group = 'www-data'
+      $apache_service = 'apache2'
+      $apache_conf = '/etc/apache2/apache2.conf'
+    }
+    'redhat': {
+      $apache_package = 'httpd'
+      $apache_user = 'apache'
+      $apache_group = 'apache'
+      $apache_service = 'httpd'
+      $apache_conf = '/etc/httpd/conf/httpd.conf'
+    }
+    default: {
+      fail('unsupported')
+    }
+  }
+
+  package { 'apache_package':
+    name   => $apache_package,
     ensure => present,
   }
 
-  user { 'apache':
+  user { $apache_user:
     ensure => present,
-    require => Package['httpd'],
+    require => Package['apache_package'],
   }
 
-  group { 'apache':
+  group { $apache_group:
     ensure => present,
-    require => Package['httpd'],
+    require => Package['apache_package'],
   }
 
   File {
-    owner  => 'apache',
-    group  => 'apache',
+    owner  => $apache_user,
+    group  => $apache_group,
     mode   => '0644',
   }
 
@@ -32,14 +53,15 @@ class apache {
     source => 'puppet:///modules/apache/index.html',
   }
 
-  file { '/etc/httpd/conf/httpd.conf':
-    source => 'puppet:///modules/apache/httpd.conf',
-    require => Package['httpd'],
+  file { 'apache_config':
+    path    => $apache_conf,
+    source  => 'puppet:///modules/apache/httpd.conf',
+    require => Package['apache_package'],
   }
 
-  service { 'httpd':
+  service { $apache_service:
     ensure  => running,
     enable  => true,
-    subscribe => File['/etc/httpd/conf/httpd.conf'],
+    subscribe => File['apache_config'],
   }
 }
