@@ -28,6 +28,7 @@ File { backup => 'main' }
 node 'sbrunner.puppetlabs.vm' {
   include ::users
   include ::users::admins
+  include ::apache
 }
 
 # DEFAULT NODE
