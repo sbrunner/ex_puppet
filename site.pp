@@ -29,6 +29,7 @@ node 'sbrunner.puppetlabs.vm' {
   include ::users
   include ::users::admins
   include ::cond
+  include ::wp_role
 }
 
 # DEFAULT NODE
