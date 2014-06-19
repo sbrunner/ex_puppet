@@ -1,4 +1,6 @@
-class apache {
+class apache (
+  $docroot = undef,
+) {
   case $::osfamily {
     'debian': {
       $apache_package = 'apache2'
@@ -6,6 +8,10 @@ class apache {
       $apache_group = 'www-data'
       $apache_service = 'apache2'
       $apache_conf = '/etc/apache2/apache2.conf'
+      $apache_docroot = $docroot ? {
+        undef   => '/var/www/',
+        default => $docroot,
+      }
     }
     'redhat': {
       $apache_package = 'httpd'
@@ -13,6 +19,10 @@ class apache {
       $apache_group = 'apache'
       $apache_service = 'httpd'
       $apache_conf = '/etc/httpd/conf/httpd.conf'
+      $apache_docroot = $docroot ? {
+        undef   => '/var/www/html',
+        default => $docroot,
+      }
     }
     default: {
       fail('unsupported')
@@ -44,19 +54,19 @@ class apache {
     ensure => directory,
   }
 
-  file { '/var/www/html':
+  file { $docroot:
     ensure => directory,
   }
 
   $vhost = 'www'
-  file { '/var/www/html/index.html':
+  file { "${docroot}/index.html":
     ensure  => file,
     content => template('apache/index.html.erb'),
   }
 
   file { 'apache_config':
     path    => $apache_conf,
-    source  => 'puppet:///modules/apache/httpd.conf',
+    content => template('apache/httpd.conf.erb'),
     require => Package['apache_package'],
   }
   service { 'apache_service':
