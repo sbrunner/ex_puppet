@@ -29,7 +29,7 @@ node 'sbrunner.puppetlabs.vm' {
   include ::users
   include ::users::admins
   class { 'apache':
-    docroot => '/var/www/toto',
+    apache_docroot => '/var/www/toto',
   }
   include ::cond
 }

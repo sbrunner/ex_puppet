@@ -1,33 +1,11 @@
 class apache (
-  $docroot = undef,
-) {
-  case $::osfamily {
-    'debian': {
-      $apache_package = 'apache2'
-      $apache_user = 'www-data'
-      $apache_group = 'www-data'
-      $apache_service = 'apache2'
-      $apache_conf = '/etc/apache2/apache2.conf'
-      $apache_docroot = $docroot ? {
-        undef   => '/var/www/',
-        default => $docroot,
-      }
-    }
-    'redhat': {
-      $apache_package = 'httpd'
-      $apache_user = 'apache'
-      $apache_group = 'apache'
-      $apache_service = 'httpd'
-      $apache_conf = '/etc/httpd/conf/httpd.conf'
-      $apache_docroot = $docroot ? {
-        undef   => '/var/www/html',
-        default => $docroot,
-      }
-    }
-    default: {
-      fail('unsupported')
-    }
-  }
+  $apache_package = $apache::params::apache_package,
+  $apache_user = $apache::params::apache_user,
+  $apache_group = $apache::params::apache_group,
+  $apache_service = $apache::params::apache_service,
+  $apache_conf = $apache::params::apache_conf,
+  $apache_docroot = $apache::params::apache_docroot,
+) inherits apache::params {
 
   package { 'apache_package':
     name   => $apache_package,
@@ -54,12 +32,12 @@ class apache (
     ensure => directory,
   }
 
-  file { $docroot:
+  file { $apache_docroot:
     ensure => directory,
   }
 
   $vhost = 'www'
-  file { "${docroot}/index.html":
+  file { "${apache_docroot}/index.html":
     ensure  => file,
     content => template('apache/index.html.erb'),
   }
