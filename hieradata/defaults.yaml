@@ -1,0 +1,3 @@
+---
+message: "This is a sample variable that came from a Hiera datasource"
+apache::apache_docroot: '/var/www/toto'

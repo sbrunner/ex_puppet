@@ -28,9 +28,7 @@ File { backup => 'main' }
 node 'sbrunner.puppetlabs.vm' {
   include ::users
   include ::users::admins
-  class { 'apache':
-    apache_docroot => '/var/www/toto',
-  }
+  include ::apache
   include ::cond
 }
 
